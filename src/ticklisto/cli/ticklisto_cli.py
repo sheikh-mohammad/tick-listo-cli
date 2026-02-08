@@ -26,6 +26,41 @@ class TickListoCLI:
         self.sort_service = SortService()
         self.console = Console()
 
+        # Initialize ReminderService if Gmail credentials are available (T073 - User Story 4)
+        self.reminder_service = None
+        try:
+            from ..services.gmail_service import GmailService
+            from ..services.reminder_service import ReminderService
+            from ..services.time_zone_service import TimeZoneService
+            from ..services.storage_service import StorageService
+
+            # Try to initialize Gmail service (requires credentials.json)
+            gmail_service = GmailService()
+            storage_service = StorageService()
+            tz_service = TimeZoneService()
+
+            # Initialize ReminderService
+            self.reminder_service = ReminderService(
+                gmail_service=gmail_service,
+                storage_service=storage_service,
+                time_zone_service=tz_service
+            )
+
+            # Update TaskService with ReminderService
+            self.task_service.reminder_service = self.reminder_service
+
+            # Start the reminder service
+            self.reminder_service.start()
+
+            self.console.print("[green]✓ Email reminder service started[/green]")
+
+        except FileNotFoundError:
+            # Gmail credentials not found - reminders disabled
+            self.console.print("[yellow]⚠ Email reminders disabled (credentials.json not found)[/yellow]")
+        except Exception as e:
+            # Other error - reminders disabled
+            self.console.print(f"[yellow]⚠ Email reminders disabled: {e}[/yellow]")
+
     def run(self):
         """Main CLI loop that handles user commands."""
         # Display startup message with ASCII art header
@@ -61,6 +96,12 @@ class TickListoCLI:
                     self._handle_delete_all()
                 elif command in ['stats', 's']:  # Add stats command
                     self._handle_stats()
+                elif command in ['reminders', 'rem']:  # Add reminder status command (T074)
+                    self._handle_reminders()
+                elif command in ['recurring', 'rec']:  # Add recurring series command (T083)
+                    self._handle_recurring_series()
+                elif command in ['timezone', 'tz']:  # Add timezone configuration command (T102)
+                    self._handle_timezone()
                 elif command in ['help', 'h']:
                     self._handle_help()
                 else:
@@ -140,6 +181,7 @@ class TickListoCLI:
 
         # Optional: Prompt for due date
         due_date = None
+        due_time = None
         has_due_date = Confirm.ask("Add a due date?", default=False)
         if has_due_date:
             due_date_input = Prompt.ask(
@@ -150,9 +192,137 @@ class TickListoCLI:
                 try:
                     from ..services.validation_service import validate_date_input
                     due_date = validate_date_input(due_date_input)
+
+                    # If due date is set, optionally prompt for time (T024 - User Story 1)
+                    has_due_time = Confirm.ask("Add a specific time?", default=False)
+                    if has_due_time:
+                        due_time_input = Prompt.ask(
+                            "Enter time (HH:MM, HH:MM AM/PM, or '2pm', '9am', etc.)"
+                        ).strip()
+
+                        if due_time_input:
+                            try:
+                                from ..utils.date_parser import parse_time
+                                due_time = parse_time(due_time_input)
+                            except ValueError as e:
+                                self.task_service.display_error_message(f"Invalid time: {str(e)}")
+                                self.console.print("[yellow]Continuing without time...[/yellow]")
+
                 except ValueError as e:
                     self.task_service.display_error_message(f"Invalid date: {str(e)}")
                     self.console.print("[yellow]Continuing without due date...[/yellow]")
+
+        # Optional: Make task recurring (T041 - User Story 2)
+        recurrence_pattern = None
+        recurrence_interval = 1
+        recurrence_weekdays = None
+        recurrence_end_date = None
+
+        if due_date:  # Recurring tasks require a due date
+            has_recurrence = Confirm.ask("Make this a recurring task?", default=False)
+            if has_recurrence:
+                # Prompt for recurrence pattern
+                pattern_input = Prompt.ask(
+                    "Enter recurrence pattern [bold](daily/weekly/monthly/yearly)[/bold]"
+                ).strip().lower()
+
+                try:
+                    from ..models.task import RecurrencePattern
+                    pattern_map = {
+                        "daily": RecurrencePattern.DAILY,
+                        "weekly": RecurrencePattern.WEEKLY,
+                        "monthly": RecurrencePattern.MONTHLY,
+                        "yearly": RecurrencePattern.YEARLY
+                    }
+                    recurrence_pattern = pattern_map.get(pattern_input)
+
+                    if not recurrence_pattern:
+                        self.task_service.display_error_message(f"Invalid pattern: {pattern_input}")
+                        self.console.print("[yellow]Continuing without recurrence...[/yellow]")
+                    else:
+                        # Prompt for interval
+                        interval_input = Prompt.ask("Enter interval (e.g., 1 for every, 2 for every other)", default="1")
+                        try:
+                            recurrence_interval = int(interval_input)
+                            if recurrence_interval < 1:
+                                raise ValueError("Interval must be >= 1")
+                        except ValueError:
+                            self.task_service.display_error_message("Invalid interval, using 1")
+                            recurrence_interval = 1
+
+                        # For weekly pattern, optionally specify weekdays
+                        if recurrence_pattern == RecurrencePattern.WEEKLY:
+                            has_weekdays = Confirm.ask("Specify specific weekdays (e.g., Mon/Wed/Fri)?", default=False)
+                            if has_weekdays:
+                                weekdays_input = Prompt.ask(
+                                    "Enter weekdays (0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun), comma-separated"
+                                ).strip()
+                                try:
+                                    recurrence_weekdays = [int(d.strip()) for d in weekdays_input.split(",")]
+                                    # Validate weekdays
+                                    if not all(0 <= d <= 6 for d in recurrence_weekdays):
+                                        raise ValueError("Weekdays must be 0-6")
+                                except ValueError as e:
+                                    self.task_service.display_error_message(f"Invalid weekdays: {e}")
+                                    recurrence_weekdays = None
+
+                        # Optionally set end date
+                        has_end_date = Confirm.ask("Set an end date for recurrence?", default=False)
+                        if has_end_date:
+                            end_date_input = Prompt.ask("Enter end date (YYYY-MM-DD)").strip()
+                            try:
+                                from ..services.validation_service import validate_date_input
+                                recurrence_end_date = validate_date_input(end_date_input)
+                            except ValueError as e:
+                                self.task_service.display_error_message(f"Invalid end date: {e}")
+
+                except Exception as e:
+                    self.task_service.display_error_message(f"Error setting up recurrence: {e}")
+                    recurrence_pattern = None
+
+        # Optional: Configure reminders (T056 - User Story 3)
+        reminder_settings = []
+        if due_time:  # Reminders require due_time
+            has_reminders = Confirm.ask("Set up email reminders?", default=False)
+            if has_reminders:
+                self.console.print("\n[yellow]Configure reminders (you can add multiple)[/yellow]")
+
+                while True:
+                    offset_input = Prompt.ask(
+                        "Enter reminder time before due (e.g., '60' for 1 hour, '1440' for 1 day, or 'done' to finish)"
+                    ).strip().lower()
+
+                    if offset_input == 'done':
+                        break
+
+                    try:
+                        offset_minutes = int(offset_input)
+                        if offset_minutes <= 0:
+                            self.task_service.display_error_message("Offset must be greater than 0")
+                            continue
+
+                        # Generate label
+                        if offset_minutes < 60:
+                            label = f"{offset_minutes} minutes before"
+                        elif offset_minutes < 1440:
+                            hours = offset_minutes // 60
+                            label = f"{hours} hour{'s' if hours > 1 else ''} before"
+                        else:
+                            days = offset_minutes // 1440
+                            label = f"{days} day{'s' if days > 1 else ''} before"
+
+                        from ..models.reminder import ReminderSetting
+                        reminder_settings.append(ReminderSetting(
+                            offset_minutes=offset_minutes,
+                            label=label
+                        ))
+                        self.console.print(f"[green]Added reminder: {label}[/green]")
+
+                        if not Confirm.ask("Add another reminder?", default=False):
+                            break
+
+                    except ValueError:
+                        self.task_service.display_error_message("Invalid offset. Please enter a number.")
 
         # Add the task with all required fields
         try:
@@ -161,8 +331,26 @@ class TickListoCLI:
                 description,
                 priority=priority,
                 categories=categories,
-                due_date=due_date
+                due_date=due_date,
+                due_time=due_time
             )
+
+            # Set recurrence fields if specified (T041 - User Story 2)
+            if recurrence_pattern:
+                task.recurrence_pattern = recurrence_pattern
+                task.recurrence_interval = recurrence_interval
+                task.recurrence_weekdays = recurrence_weekdays
+                task.recurrence_end_date = recurrence_end_date
+
+                # Create recurring series
+                series = self.task_service.recurring_service.create_recurring_task(task)
+                self.console.print(f"[green]Created recurring task series: {series.series_id}[/green]")
+
+            # Set reminder settings if specified (T056 - User Story 3)
+            if reminder_settings:
+                task.reminder_settings = reminder_settings
+                self.console.print(f"[green]Configured {len(reminder_settings)} reminder(s)[/green]")
+
             self.task_service.save_to_file()
             self.task_service.display_success_message(f"Task added successfully with ID: {task.id}")
         except ValueError as e:
@@ -189,6 +377,22 @@ class TickListoCLI:
             self.task_service.display_error_message(f"Task with ID {task_id} not found.")
             return
 
+        # Check if this is a recurring task (T085 - User Story 5)
+        update_all_future = False
+        if task.series_id:
+            self.console.print("\n[yellow]⚠ This is a recurring task.[/yellow]")
+            update_choice = Prompt.ask(
+                "Update scope",
+                choices=["this", "future"],
+                default="this"
+            )
+            update_all_future = (update_choice == "future")
+
+            if update_all_future:
+                self.console.print("[cyan]Will update all future instances in the series.[/cyan]")
+            else:
+                self.console.print("[cyan]Will update only this instance.[/cyan]")
+
         # Display current values (Phase 11 - Enhanced Features)
         self.console.print("\n[bold cyan]Current Task Details:[/bold cyan]")
         self.console.print(f"  Title: {task.title}")
@@ -196,6 +400,7 @@ class TickListoCLI:
         self.console.print(f"  Priority: {task.priority.value}")
         self.console.print(f"  Categories: {', '.join(task.categories)}")
         self.console.print(f"  Due Date: {task.due_date.strftime('%Y-%m-%d') if task.due_date else 'None'}")
+        self.console.print(f"  Due Time: {task.due_time.strftime('%H:%M') if task.due_time else 'None'}")
         self.console.print(f"  Completed: {task.completed}\n")
 
         self.console.print("[yellow]Please re-enter ALL fields (full re-entry required):[/yellow]\n")
@@ -260,7 +465,9 @@ class TickListoCLI:
 
         # Full re-entry: Due date
         new_due_date = None
+        new_due_time = None
         current_due_date_str = task.due_date.strftime('%Y-%m-%d') if task.due_date else ""
+        current_due_time_str = task.due_time.strftime('%H:%M') if task.due_time else ""
 
         has_due_date = Confirm.ask("Add/update due date?", default=bool(task.due_date))
         if has_due_date:
@@ -273,6 +480,23 @@ class TickListoCLI:
                 try:
                     from ..services.validation_service import validate_date_input
                     new_due_date = validate_date_input(due_date_input)
+
+                    # If due date is set, optionally prompt for time (T024 - User Story 1)
+                    has_due_time = Confirm.ask("Add/update specific time?", default=bool(task.due_time))
+                    if has_due_time:
+                        due_time_input = Prompt.ask(
+                            "Enter time (HH:MM, HH:MM AM/PM, or '2pm', '9am', etc.)",
+                            default=current_due_time_str
+                        ).strip()
+
+                        if due_time_input:
+                            try:
+                                from ..utils.date_parser import parse_time
+                                new_due_time = parse_time(due_time_input)
+                            except ValueError as e:
+                                self.task_service.display_error_message(f"Invalid time: {str(e)}")
+                                self.console.print("[yellow]Continuing without time...[/yellow]")
+
                 except ValueError as e:
                     self.task_service.display_error_message(f"Invalid date: {str(e)}")
                     self.console.print("[yellow]Continuing without due date...[/yellow]")
@@ -285,10 +509,27 @@ class TickListoCLI:
                 description=new_description,
                 priority=new_priority,
                 categories=new_categories,
-                due_date=new_due_date
+                due_date=new_due_date,
+                due_time=new_due_time
             )
 
             if updated_task:
+                # If updating all future instances of recurring task (T085 - User Story 5)
+                if task.series_id and update_all_future:
+                    try:
+                        updated_count = self.task_service.recurring_service.update_series(
+                            series_id=task.series_id,
+                            update_future=True,
+                            title=new_title.strip(),
+                            description=new_description,
+                            priority=new_priority,
+                            categories=new_categories,
+                            due_time=new_due_time
+                        )
+                        self.console.print(f"[green]Updated {updated_count} future instance(s) in the series.[/green]")
+                    except Exception as e:
+                        self.console.print(f"[yellow]Warning: Could not update future instances: {e}[/yellow]")
+
                 self.task_service.save_to_file()
                 self.task_service.display_success_message(f"Task {task_id} updated successfully!")
             else:
@@ -313,6 +554,22 @@ class TickListoCLI:
             self.task_service.display_error_message(f"Task with ID {task_id} not found.")
             return
 
+        # Check if this is a recurring task (T086 - User Story 5)
+        stop_all_future = False
+        if task.series_id:
+            self.console.print("\n[yellow]⚠ This is a recurring task.[/yellow]")
+            delete_choice = Prompt.ask(
+                "Delete scope",
+                choices=["this", "future"],
+                default="this"
+            )
+            stop_all_future = (delete_choice == "future")
+
+            if stop_all_future:
+                self.console.print("[cyan]Will stop the series and delete all future instances.[/cyan]")
+            else:
+                self.console.print("[cyan]Will delete only this instance.[/cyan]")
+
         self.task_service.rich_ui.display_info_message(f"Task to delete: {task.title}")
 
         confirm = Confirm.ask("Are you sure you want to delete this task?")
@@ -321,6 +578,17 @@ class TickListoCLI:
             success = self.task_service.delete_task(task_id)
 
             if success:
+                # If stopping all future instances of recurring task (T086 - User Story 5)
+                if task.series_id and stop_all_future:
+                    try:
+                        deleted_count = self.task_service.recurring_service.stop_recurrence(
+                            series_id=task.series_id,
+                            delete_future=True
+                        )
+                        self.console.print(f"[green]Stopped series and deleted {deleted_count} future instance(s).[/green]")
+                    except Exception as e:
+                        self.console.print(f"[yellow]Warning: Could not stop series: {e}[/yellow]")
+
                 self.task_service.display_success_message(f"Task {task_id} deleted successfully!")
             else:
                 self.task_service.display_error_message(f"Failed to delete task {task_id}.")
@@ -359,11 +627,187 @@ class TickListoCLI:
         """Handle the quit command to gracefully shut down the app."""
         self.task_service.rich_ui.display_info_message("Saving tasks and exiting...")
         self.task_service.save_to_file()
+
+        # Stop reminder service if running (T073 - User Story 4)
+        if self.reminder_service:
+            self.console.print("[yellow]Stopping reminder service...[/yellow]")
+            self.reminder_service.stop()
+
         self.task_service.display_success_message("Tasks saved successfully. Goodbye!")
 
     def _handle_stats(self):
         """Handle the stats command to display progress statistics."""
         self.task_service.display_progress_stats_enhanced()
+
+    def _handle_reminders(self):
+        """Handle the reminders command to display reminder service status (T074 - User Story 4)."""
+        if not self.reminder_service:
+            self.console.print("[yellow]Email reminder service is not available.[/yellow]")
+            self.console.print("[dim]To enable reminders, add credentials.json to the project directory.[/dim]")
+            return
+
+        # Get status
+        status = self.reminder_service.get_status()
+
+        # Create status panel
+        from rich.panel import Panel
+        from rich.table import Table
+
+        table = Table(show_header=False, box=None)
+        table.add_column("Property", style="cyan")
+        table.add_column("Value", style="green")
+
+        table.add_row("Service Status", "🟢 Running" if status['running'] else "🔴 Stopped")
+        table.add_row("Pending Reminders", str(status['pending_count']))
+        table.add_row("Failed Reminders", str(status['failed_count']))
+        table.add_row("Total Reminders", str(status['total_count']))
+
+        panel = Panel(
+            table,
+            title="[bold cyan]Email Reminder Service Status[/bold cyan]",
+            border_style="cyan"
+        )
+
+        self.console.print("\n", panel, "\n")
+
+        # Show pending reminders if any
+        if status['pending_count'] > 0:
+            pending = self.reminder_service.get_pending_reminders()
+            self.console.print(f"[cyan]Next {min(3, len(pending))} pending reminders:[/cyan]")
+            for reminder in pending[:3]:
+                task = self.task_service.get_by_id(reminder.task_id)
+                if task:
+                    scheduled_local = self.reminder_service.time_zone_service.to_local(
+                        reminder.scheduled_time,
+                        self.reminder_service.time_zone_service.get_user_timezone()
+                    )
+                    self.console.print(
+                        f"  • Task #{task.id}: {task.title} - "
+                        f"Reminder at {scheduled_local.strftime('%b %d, %Y %I:%M %p')}"
+                    )
+
+        # Show failed reminders if any
+        if status['failed_count'] > 0:
+            self.console.print(f"\n[yellow]⚠ {status['failed_count']} reminder(s) failed to send[/yellow]")
+            self.console.print("[dim]A daily digest will be sent at 8:00 AM with failed reminders.[/dim]")
+
+    def _handle_recurring_series(self):
+        """Handle the recurring command to list and manage recurring series (T083 - User Story 5)."""
+        from rich.panel import Panel
+        from rich.table import Table
+
+        # Get all recurring series from the recurring service
+        series_list = list(self.task_service.recurring_service.series_registry.values())
+
+        if not series_list:
+            self.console.print("[yellow]No recurring task series found.[/yellow]")
+            return
+
+        # Create table
+        table = Table(title="Recurring Task Series", show_header=True, header_style="bold cyan")
+        table.add_column("Series ID", style="cyan", no_wrap=True)
+        table.add_column("Pattern", style="green")
+        table.add_column("Interval", style="yellow")
+        table.add_column("Active", style="magenta")
+        table.add_column("Completed", style="blue")
+        table.add_column("Status", style="white")
+
+        for series in series_list:
+            status = "🟢 Active" if series.is_active else "🔴 Stopped"
+            table.add_row(
+                series.series_id[:8] + "...",
+                series.recurrence_pattern,
+                str(series.recurrence_interval),
+                str(len(series.active_instance_ids)),
+                str(len(series.completed_instance_ids)),
+                status
+            )
+
+        self.console.print("\n", table, "\n")
+
+        # Ask if user wants to stop a series (T084)
+        if Confirm.ask("Do you want to stop a recurring series?", default=False):
+            series_id_input = Prompt.ask("Enter series ID (first 8 characters are enough)")
+
+            # Find matching series
+            matching_series = None
+            for series in series_list:
+                if series.series_id.startswith(series_id_input):
+                    matching_series = series
+                    break
+
+            if not matching_series:
+                self.console.print("[red]Series not found.[/red]")
+                return
+
+            # Ask if user wants to delete future instances
+            delete_future = Confirm.ask(
+                "Delete all future instances? (No = just stop generating new ones)",
+                default=False
+            )
+
+            try:
+                deleted_count = self.task_service.recurring_service.stop_recurrence(
+                    series_id=matching_series.series_id,
+                    delete_future=delete_future
+                )
+
+                if delete_future:
+                    self.console.print(f"[green]✓ Series stopped and {deleted_count} future instance(s) deleted.[/green]")
+                else:
+                    self.console.print("[green]✓ Series stopped. Existing instances preserved.[/green]")
+
+            except Exception as e:
+                self.console.print(f"[red]Error stopping series: {e}[/red]")
+
+    def _handle_timezone(self):
+        """Handle timezone configuration command (T102 - Phase 10)."""
+        try:
+            from ..utils.config_manager import ConfigManager
+            import pytz
+
+            config = ConfigManager()
+            current_tz = config.get_time_zone()
+
+            self.console.print(f"\n[bold cyan]Time Zone Configuration[/bold cyan]")
+            self.console.print(f"Current time zone: [green]{current_tz}[/green]\n")
+
+            change = Confirm.ask("Do you want to change the time zone?", default=False)
+
+            if change:
+                self.console.print("\n[yellow]Enter a valid time zone (e.g., America/New_York, Europe/London, Asia/Tokyo)[/yellow]")
+                self.console.print("[dim]Common time zones:[/dim]")
+                self.console.print("  - America/New_York (EST/EDT)")
+                self.console.print("  - America/Los_Angeles (PST/PDT)")
+                self.console.print("  - America/Chicago (CST/CDT)")
+                self.console.print("  - Europe/London (GMT/BST)")
+                self.console.print("  - Europe/Paris (CET/CEST)")
+                self.console.print("  - Asia/Tokyo (JST)")
+                self.console.print("  - Asia/Shanghai (CST)")
+                self.console.print("  - Australia/Sydney (AEST/AEDT)\n")
+
+                new_tz = Prompt.ask("Enter time zone", default=current_tz)
+
+                if new_tz.strip():
+                    try:
+                        # Validate timezone
+                        if new_tz not in pytz.all_timezones:
+                            self.console.print(f"[red]✗ Invalid time zone: {new_tz}[/red]")
+                            self.console.print("[yellow]Use a valid IANA time zone name (e.g., America/New_York)[/yellow]")
+                            return
+
+                        # Update config
+                        config.set_time_zone(new_tz)
+                        self.console.print(f"[green]✓ Time zone updated to: {new_tz}[/green]")
+                        self.console.print("[yellow]Note: Restart the application for changes to take full effect.[/yellow]")
+
+                    except ValueError as e:
+                        self.console.print(f"[red]✗ Error: {e}[/red]")
+                else:
+                    self.console.print("[yellow]Time zone not changed.[/yellow]")
+
+        except Exception as e:
+            self.console.print(f"[red]Error managing time zone: {e}[/red]")
 
     def _handle_search(self):
         """Handle the search command to find tasks by keyword with scope selection (Phase 11 - Enhanced Features)."""
@@ -653,6 +1097,9 @@ class TickListoCLI:
             "sort or sr - Sort tasks by criteria",
             "clear or clr - Clear the console",
             "stats or s - View task statistics",
+            "reminders or rem - View email reminder service status",
+            "recurring or rec - List and manage recurring task series",
+            "timezone or tz - Configure time zone settings",
             "help or h - Show this help message",
             "quit or q - Exit the application"
         ], "Available Commands")

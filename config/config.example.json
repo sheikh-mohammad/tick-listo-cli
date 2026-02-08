@@ -1,0 +1,15 @@
+{
+  "_comment": "Ticklisto Configuration File - Copy this to config.json and customize",
+
+  "time_zone": "America/New_York",
+  "_time_zone_help": "IANA time zone name (e.g., America/New_York, Europe/London, Asia/Tokyo). Used for displaying due dates/times and scheduling reminders in your local time.",
+
+  "default_reminder_offsets": [60, 1440],
+  "_default_reminder_offsets_help": "Default reminder times in minutes before due time. Applied automatically when creating tasks with due_time. Examples: 15 (15 min), 60 (1 hour), 1440 (1 day), 10080 (1 week).",
+
+  "email_recipient": "your-email@example.com",
+  "_email_recipient_help": "Email address to receive task reminders. Must match the Gmail account used for OAuth authentication.",
+
+  "daily_digest_time": "08:00",
+  "_daily_digest_time_help": "Time to send daily digest of pending reminders in HH:MM format (24-hour). Example: '08:00' for 8:00 AM, '17:30' for 5:30 PM."
+}

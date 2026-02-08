@@ -2,16 +2,16 @@
 id: 0001
 title: Advanced Ticklisto Features Specification
 stage: spec
-date: 2026-02-04
+date: 2026-02-07
 surface: agent
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 feature: 003-advance-ticklisto-enhancements
 branch: 003-advance-ticklisto-enhancements
-user: Sheikh Mohammad Ahmed
+user: user
 command: /sp.specify
-labels: ["specification", "recurring-tasks", "due-dates", "reminders", "gmail-api", "advanced-features"]
+labels: ["recurring-tasks", "email-reminders", "due-times", "gmail-api", "background-service"]
 links:
-  spec: ../spec.md
+  spec: specs/003-advance-ticklisto-enhancements/spec.md
   ticket: null
   adr: null
   pr: null
@@ -19,14 +19,14 @@ files:
   - specs/003-advance-ticklisto-enhancements/spec.md
   - specs/003-advance-ticklisto-enhancements/checklists/requirements.md
 tests:
-  - None (specification phase)
+  - none (specification phase)
 ---
 
 ## Prompt
 
-```text
-/sp.specify
-## **Advanced Level (Intelligent Features)**
+```
+
+/sp.specify **Advanced Level (Intelligent Features)**
 
 1. Recurring Tasks – Auto-reschedule repeating tasks (e.g., "weekly meeting")
 2. Due Dates & Time Reminders – Set deadlines with date/time pickers; browser notifications
@@ -81,73 +81,57 @@ this is feature 003
 * Due Dates & Time Reminders – Set deadlines with date/time pickers; browser notifications
 * **Required Recurring Tasks agreetion, due date, time** – Task creation MUST require Recurring Tasks agreetion as optional. Users can assign due date and time.
 
-> All Remainders will sent using gmail api python library to sent it on gmail
+> All Remainders will sent using gmail api python library to sent it on gmail to haji08307@gmail.com
 
-Branch name: `003-advance-ticklisto-enhancements`
+and use these libraries "google
+    "google-api-python-client
+    "google-auth
+    "google-auth-oauthlib
+And all credentials are added
+
+like token.json and credentials.json
+
+Branch name: `003-advance-ticklisto-enhancements
 ```
 
 ## Response snapshot
 
-Created comprehensive specification for Advanced Ticklisto features including:
+Created comprehensive feature specification for Advanced Ticklisto Enhancements (Feature 003) with the following components:
 
-**Feature Structure Created**:
-- Branch: 003-advance-ticklisto-enhancements
-- Spec file: specs/003-advance-ticklisto-enhancements/spec.md
-- Checklist: specs/003-advance-ticklisto-enhancements/checklists/requirements.md
+**Specification Document** (specs/003-advance-ticklisto-enhancements/spec.md):
+- 7 prioritized user stories (P1-P3) covering due dates with time support, recurring tasks with auto-rescheduling, email reminders via Gmail API, background reminder service, recurring task management, flexible reminder configuration, and reminder email content
+- 20 functional requirements (FR-001 to FR-020) defining all system capabilities
+- 15 measurable success criteria (SC-001 to SC-015) with specific metrics
+- 12 edge cases with handling strategies
+- 4 key entities: Task (enhanced), ReminderService, RecurringSeries, EmailReminder
+- Clear sections for Assumptions, Dependencies, and Out of Scope
 
-**Specification Contents**:
+**Quality Checklist** (specs/003-advance-ticklisto-enhancements/checklists/requirements.md):
+- All validation items passed
+- No [NEEDS CLARIFICATION] markers
+- Specification ready for next phase
 
-1. **User Stories (3 prioritized)**:
-   - P1: Task Scheduling with Due Dates and Times (foundation for time-based management)
-   - P2: Recurring Task Automation (builds on P1, eliminates repetitive data entry)
-   - P3: Email Reminder Notifications (extends value beyond active usage, requires Gmail API)
-
-2. **Functional Requirements (43 total)**:
-   - FR-001 to FR-009: Due Dates & Times (9 requirements)
-   - FR-010 to FR-020: Recurring Tasks (11 requirements)
-   - FR-021 to FR-033: Email Reminders (13 requirements)
-   - FR-034 to FR-037: Data Persistence (4 requirements)
-   - FR-038 to FR-043: User Interface (6 requirements)
-
-3. **Key Entities Defined**:
-   - Task (with new attributes: due_date, recurrence_pattern, is_recurring, parent_task_id, completion_history)
-   - Reminder (task_id, reminder_time, offset_from_due, status)
-   - RecurrencePattern (pattern_type, interval, end_date, occurrences_count)
-   - GmailConfig (user_email, credentials_path, token_path, enabled)
-
-4. **Success Criteria (14 measurable outcomes)**:
-   - Performance metrics (SC-001 to SC-004: task creation under 30s, recurring setup under 45s, auto-creation within 1s, reminders within 60s)
-   - System capabilities (SC-005 to SC-010: 100+ tasks support, 95% email delivery, graceful failures, backward compatibility)
-   - User experience goals (SC-011 to SC-014: time savings, clarity, visibility, completeness)
-
-5. **Edge Cases (10 documented)**:
-   - Past due dates, recurring task completion timing, deletion options, API failures, timezone handling, concurrent modifications, email delivery failures, reminder precision, multiple patterns, completion without due date
-
-6. **Risk Analysis (5 risks with mitigations)**:
-   - Gmail API quota limits
-   - OAuth2 authentication complexity
-   - Recurring task data corruption
-   - Timezone confusion
-   - Performance degradation with many tasks
-
-**Validation Results**:
-- ✅ All checklist items passed
-- ✅ Zero [NEEDS CLARIFICATION] markers (all decisions made with reasonable defaults)
-- ✅ All requirements testable and unambiguous
-- ✅ Success criteria measurable and technology-agnostic
-- ✅ Ready to proceed to planning phase
+**Key Features Specified**:
+1. Due dates with time support (multiple time formats: 24-hour, 12-hour AM/PM, natural language)
+2. Recurring tasks (daily, weekly, bi-weekly, monthly, yearly, custom intervals)
+3. Auto-rescheduling when recurring tasks are marked complete
+4. Email reminders via Gmail API to haji08307@gmail.com
+5. Configurable reminder timing (15 min, 1 hour, 1 day before)
+6. Background reminder service for continuous monitoring
+7. Recurring task series management (update/delete this instance or all future)
+8. Backward compatibility with existing tasks
 
 ## Outcome
 
-- ✅ Impact: Created comprehensive, production-ready specification for advanced Ticklisto features with 43 functional requirements, 3 prioritized user stories, 14 success criteria, and complete risk analysis
-- 🧪 Tests: No tests at specification phase; defined acceptance scenarios for all user stories
-- 📁 Files: Created 2 files (spec.md, checklists/requirements.md)
-- 🔁 Next prompts: `/sp.plan` to create architectural design, or `/sp.clarify` if any requirements need refinement
-- 🧠 Reflection: Specification successfully balances complexity (Gmail API integration, recurring task logic) with clarity. All decisions documented with reasonable defaults. Priority ordering (P1: Due Dates → P2: Recurring → P3: Reminders) ensures incremental value delivery.
+- ✅ Impact: Complete feature specification created for advanced task management capabilities including recurring tasks, time-based due dates, and Gmail email reminders. Specification is validated and ready for planning phase.
+- 🧪 Tests: No tests yet (specification phase). Test requirements defined in acceptance scenarios for each user story.
+- 📁 Files: Created spec.md (270 lines) and requirements.md checklist. Branch 003-advance-ticklisto-enhancements created and checked out.
+- 🔁 Next prompts: `/sp.clarify` to refine requirements through targeted questions, or `/sp.plan` to proceed directly to implementation planning
+- 🧠 Reflection: Specification successfully balances user requirements (Gmail API, specific email address) with technology-agnostic approach. All user stories are independently testable with clear priorities. Edge cases comprehensively addressed including API failures, time zones, and DST transitions.
 
 ## Evaluation notes (flywheel)
 
-- Failure modes observed: None - specification completed successfully with all validation checks passed
-- Graders run and results (PASS/FAIL): Requirements checklist PASS (all items checked), no [NEEDS CLARIFICATION] markers remaining
-- Prompt variant (if applicable): Standard /sp.specify workflow with automatic validation
-- Next experiment (smallest change to try): Consider adding natural language date parsing to Out of Scope section for future enhancement tracking
+- Failure modes observed: None. Specification completed successfully with all validation checks passed.
+- Graders run and results (PASS/FAIL): Quality checklist validation - PASS (all items checked)
+- Prompt variant (if applicable): Standard /sp.specify workflow
+- Next experiment (smallest change to try): Consider adding user story for reminder history/audit log in future iterations

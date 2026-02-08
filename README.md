@@ -1,6 +1,6 @@
 # Tick Listo
 
-A command-line task management application with **persistent JSON storage** and advanced organization features. Built with Python 3.14+ and Rich for beautiful console formatting.
+A command-line task management application with **persistent JSON storage**, **recurring tasks**, **email reminders**, and advanced organization features. Built with Python 3.14+ and Rich for beautiful console formatting.
 
 ## Features
 
@@ -15,18 +15,38 @@ A command-line task management application with **persistent JSON storage** and 
 ### Advanced Organization
 - **Priority Levels** (REQUIRED): Assign high, medium, or low priority to every task
 - **Category Tags** (REQUIRED): Organize tasks with one or more category labels
-- **Due Dates**: Set deadlines with flexible date parsing (MM/DD/YYYY, natural language like "tomorrow", "next week")
+- **Due Dates with Times**: Set deadlines with optional time components (e.g., "2026-02-15 at 2:30 PM")
+- **Time Zone Support**: Configure your local time zone for accurate due date/time display
 - **Search with Scope**: Find tasks by keyword in title only, description only, or both
 - **Filter**: Filter tasks by status, priority, categories, and due dates
 - **Sort**: Sort tasks by due date, priority, or alphabetically
 - **Delete All**: Remove all tasks at once with confirmation prompt
 - **Enhanced Clear**: Properly clear terminal buffer (not just scroll)
 
+### Recurring Tasks
+- **Automatic Rescheduling**: Create tasks that repeat on a schedule
+- **Flexible Patterns**: Daily, weekly, monthly, or yearly recurrence
+- **Custom Intervals**: Every N days/weeks/months/years (e.g., every 2 weeks)
+- **Weekday-Specific**: For weekly tasks, specify exact days (e.g., Mon/Wed/Fri)
+- **End Dates**: Optionally set when recurrence should stop
+- **Instance Management**: Update or delete single instances or all future instances
+- **Series Tracking**: View and manage all recurring task series
+
+### Email Reminders
+- **Gmail Integration**: Send reminder emails via Gmail API with OAuth 2.0
+- **Multiple Reminders**: Set multiple reminder times per task (e.g., 1 hour and 1 day before)
+- **Default Reminders**: Automatically apply default reminder offsets from config
+- **Background Service**: Reminder service runs in background checking every minute
+- **Retry Logic**: Automatic retry with exponential backoff for failed sends
+- **Daily Digest**: Receive daily summary of pending reminders at 8 AM
+- **Rich Email Content**: HTML-formatted emails with all task details and priority indicators
+
 ### Data Persistence
 - **JSON Storage**: All tasks saved to `ticklisto_data.json` in the project directory
 - **Atomic Writes**: Safe file operations prevent data corruption
 - **ID Management**: Task IDs never reused during normal operation
 - **ID Reset**: After "delete all", ID counter resets to 1 for fresh start
+- **Reminder State**: Reminder queue persisted to `reminders.json`
 
 ## Prerequisites
 
@@ -79,6 +99,11 @@ python -m todo_app
 - `filter` or `fl` - Filter tasks by status, priority, categories, or dates
 - `sort` or `sr` - Sort tasks by due date, priority, or title
 - `clear` or `clr` - Clear the terminal screen and buffer
+
+#### Advanced Features
+- `reminders` or `rem` - View email reminder service status
+- `recurring` or `rec` - List and manage recurring task series
+- `timezone` or `tz` - Configure time zone settings
 
 #### System Commands
 - `help` or `h` - Show help information
@@ -594,6 +619,158 @@ The application maintains full backward compatibility with existing task data. T
 - Priority: `medium`
 - Categories: `[]` (empty list)
 - Due date: `None`
+
+## Troubleshooting
+
+### Gmail Authentication Issues
+
+**Problem**: "credentials.json not found" error when starting the application
+
+**Solution**:
+1. Email reminders are optional. The application will work without Gmail credentials
+2. To enable email reminders:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable the Gmail API
+   - Create OAuth 2.0 credentials (Desktop application)
+   - Download the credentials file and save it as `credentials.json` in the project root
+3. On first use, you'll be prompted to authorize the application in your browser
+
+**Problem**: "Token expired" or authentication errors
+
+**Solution**:
+1. Delete the `token.json` file in the project root
+2. Restart the application
+3. Re-authorize when prompted in your browser
+4. The new token will be saved automatically
+
+**Problem**: Reminders not sending
+
+**Solution**:
+1. Check reminder service status: `reminders` or `rem` command
+2. Verify your email address in `config/config.json` matches your Gmail account
+3. Check that tasks have both `due_date` and `due_time` set (reminders require time)
+4. Review logs for error messages (if logging is enabled)
+5. Ensure Gmail API quota hasn't been exceeded (check Google Cloud Console)
+
+### Reminder Service Issues
+
+**Problem**: Reminder service not starting
+
+**Solution**:
+1. Verify `credentials.json` exists in the project root
+2. Check that all required packages are installed: `pip install google-api-python-client google-auth google-auth-oauthlib`
+3. Restart the application
+4. If the issue persists, the application will continue to work without reminders
+
+**Problem**: Reminders sent at wrong time
+
+**Solution**:
+1. Check your time zone configuration: `timezone` or `tz` command
+2. Verify the time zone is correct (e.g., "America/New_York", not "EST")
+3. Update if needed and restart the application
+4. Due times are displayed in your local time zone but stored in UTC
+
+**Problem**: Multiple reminder emails for the same task
+
+**Solution**:
+1. This is expected if you configured multiple reminder offsets (e.g., 1 hour and 1 day before)
+2. To change: update the task and modify reminder settings
+3. To disable: remove reminder settings when updating the task
+
+### Time Zone Configuration
+
+**Problem**: Due dates/times showing in wrong time zone
+
+**Solution**:
+1. Configure your time zone: `timezone` or `tz` command
+2. Use IANA time zone names (e.g., "America/Los_Angeles", "Europe/London", "Asia/Tokyo")
+3. Common time zones:
+   - US Eastern: `America/New_York`
+   - US Pacific: `America/Los_Angeles`
+   - US Central: `America/Chicago`
+   - UK: `Europe/London`
+   - Central Europe: `Europe/Paris`
+   - Japan: `Asia/Tokyo`
+   - Australia: `Australia/Sydney`
+4. Restart the application after changing time zone
+
+**Problem**: "Invalid time zone" error
+
+**Solution**:
+1. Use full IANA time zone names, not abbreviations (use "America/New_York", not "EST")
+2. Check spelling and capitalization (time zones are case-sensitive)
+3. See full list: [IANA Time Zone Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+
+### Recurring Task Issues
+
+**Problem**: Next instance not generated after completing recurring task
+
+**Solution**:
+1. Verify the task has a recurrence pattern set
+2. Check if the series has reached its end date
+3. Use `recurring` or `rec` command to view series status
+4. If series is inactive, it won't generate new instances
+
+**Problem**: Can't update all future instances
+
+**Solution**:
+1. When updating a recurring task, you'll be prompted: "Update this instance only or all future instances?"
+2. Select "future" to update all upcoming instances
+3. Select "this" to update only the current instance
+4. Completed instances are never modified
+
+### General Issues
+
+**Problem**: Application crashes or freezes
+
+**Solution**:
+1. Check for corrupted data files: `ticklisto_data.json`, `reminders.json`
+2. Backup and delete these files to start fresh (you'll lose existing tasks)
+3. Ensure Python 3.14+ is installed: `python --version`
+4. Reinstall dependencies: `uv sync` or `pip install -r requirements.txt`
+
+**Problem**: Tasks not persisting after restart
+
+**Solution**:
+1. Always exit using `quit` or `q` command (not Ctrl+C)
+2. Check file permissions on `ticklisto_data.json`
+3. Verify the file exists and is not empty
+4. Check disk space availability
+
+**Problem**: Performance degradation with many tasks
+
+**Solution**:
+1. The application is tested with 1000+ tasks
+2. If experiencing slowness:
+   - Use filters to view subsets of tasks
+   - Archive completed tasks periodically
+   - Consider splitting into multiple data files for different projects
+
+### Configuration Issues
+
+**Problem**: Config file not found
+
+**Solution**:
+1. Copy `config/config.example.json` to `config/config.json`
+2. Customize settings as needed
+3. The application will create default config if missing
+
+**Problem**: Changes to config not taking effect
+
+**Solution**:
+1. Restart the application after modifying `config/config.json`
+2. Verify JSON syntax is valid (use a JSON validator)
+3. Check that field names match exactly (case-sensitive)
+
+### Getting Help
+
+If you encounter issues not covered here:
+1. Check the logs (if logging is enabled)
+2. Review error messages carefully - they often indicate the solution
+3. Verify all prerequisites are installed
+4. Try with a fresh data file to rule out data corruption
+5. Report issues at: [GitHub Issues](https://github.com/anthropics/claude-code/issues)
 
 ## License
 

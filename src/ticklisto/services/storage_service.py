@@ -60,11 +60,22 @@ class StorageService:
             if not isinstance(data["next_id"], int) or data["next_id"] < 1:
                 raise ValueError("'next_id' must be a positive integer")
 
+            # Validate recurring_series if present (optional for backward compatibility)
+            if "recurring_series" in data:
+                if not isinstance(data["recurring_series"], list):
+                    raise ValueError("'recurring_series' must be a list")
+
             # Return deep copy to prevent external modification
-            return {
+            result = {
                 "tasks": [task.copy() for task in data["tasks"]],
                 "next_id": data["next_id"],
             }
+
+            # Include recurring_series if present
+            if "recurring_series" in data:
+                result["recurring_series"] = [series.copy() for series in data["recurring_series"]]
+
+            return result
 
         except json.JSONDecodeError as e:
             raise ValueError(f"JSON file is corrupted: {str(e)}")
@@ -133,3 +144,25 @@ class StorageService:
                     pass
 
             raise IOError(f"Error saving to JSON file: {str(e)}")
+
+    def get_task(self, task_id: int, file_path: str = "ticklisto_data.json"):
+        """
+        Get a single task by ID.
+
+        Args:
+            task_id: ID of task to retrieve
+            file_path: Path to JSON file
+
+        Returns:
+            Task object if found, None otherwise
+        """
+        from ..models.task import Task
+
+        try:
+            data = self.load_from_json(file_path)
+            for task_dict in data["tasks"]:
+                if task_dict["id"] == task_id:
+                    return Task.from_dict(task_dict)
+            return None
+        except Exception:
+            return None

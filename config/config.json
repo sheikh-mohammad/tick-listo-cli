@@ -1,0 +1,6 @@
+{
+  "time_zone": "America/New_York",
+  "default_reminder_offsets": [60, 1440],
+  "email_recipient": "haji08307@gmail.com",
+  "daily_digest_time": "08:00"
+}

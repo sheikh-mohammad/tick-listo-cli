@@ -1,9 +1,10 @@
 """
 SortService for task sorting functionality.
 Provides sorting by due date, priority, and title with secondary sort options.
+Extended to support sorting by date and time.
 """
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, time
 from ..models.task import Task, Priority
 
 
@@ -68,14 +69,27 @@ class SortService:
         tasks: List[Task],
         secondary_sort: Optional[str] = None
     ) -> List[Task]:
-        """Sort tasks by due date, with tasks without due dates at the end."""
+        """
+        Sort tasks by due date and time, with tasks without due dates at the end.
+
+        Sorting order:
+        1. Tasks with due_date, sorted by date first, then time within same date
+        2. Tasks without due_date at the end
+
+        For tasks on the same date:
+        - Tasks without time (None) come first (treated as midnight)
+        - Tasks with time are sorted by time
+        """
         def sort_key(task: Task):
             # Tasks without due dates go to the end
             if task.due_date is None:
                 # Use a very large datetime for tasks without due dates
-                primary = datetime.max
+                primary_date = datetime.max
+                primary_time = time(23, 59, 59)
             else:
-                primary = task.due_date
+                primary_date = task.due_date
+                # Tasks without time are treated as midnight (00:00:00)
+                primary_time = task.due_time if task.due_time is not None else time(0, 0, 0)
 
             # Apply secondary sort if specified
             if secondary_sort == "priority":
@@ -85,9 +99,33 @@ class SortService:
             else:
                 secondary = 0
 
-            return (primary, secondary)
+            return (primary_date, primary_time, secondary)
 
         return sorted(tasks, key=sort_key)
+
+    def sort_by_due_date(self, tasks: List[Task]) -> List[Task]:
+        """
+        Convenience method to sort tasks by due date and time.
+
+        Args:
+            tasks: List of tasks to sort
+
+        Returns:
+            Sorted list of tasks
+        """
+        return self._sort_by_due_date(tasks)
+
+    def sort_by_priority(self, tasks: List[Task]) -> List[Task]:
+        """
+        Convenience method to sort tasks by priority.
+
+        Args:
+            tasks: List of tasks to sort
+
+        Returns:
+            Sorted list of tasks
+        """
+        return self._sort_by_priority(tasks)
 
     def _sort_by_priority(
         self,

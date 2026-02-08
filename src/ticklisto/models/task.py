@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, time
+from typing import Optional, TYPE_CHECKING
 from enum import Enum
+
+if TYPE_CHECKING:
+    from .reminder import ReminderSetting
 
 
 class TaskStatus(Enum):
@@ -17,10 +20,20 @@ class Priority(str, Enum):
     LOW = "low"
 
 
+class RecurrencePattern(str, Enum):
+    """Recurrence pattern types for recurring tasks."""
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    BI_WEEKLY = "bi-weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+    CUSTOM = "custom"
+
+
 @dataclass
 class Task:
     """
-    Enhanced task entity with priority, categories, and due date.
+    Enhanced task entity with priority, categories, due date, time support, recurrence, and reminders.
 
     Attributes:
         id: Auto-generated sequential unique identifier
@@ -30,7 +43,15 @@ class Task:
         priority: Task priority level (high/medium/low, default: medium)
         categories: List of category tags (default: empty list)
         due_date: Optional due date for the task
+        due_time: Optional time component (HH:MM)
         status: Task status enum ('pending', 'in-progress', 'completed') (default: 'pending')
+        recurrence_pattern: Recurrence type (daily/weekly/monthly/yearly/custom)
+        recurrence_interval: Interval multiplier for custom recurrence
+        recurrence_weekdays: Weekdays for custom patterns (0=Mon, 6=Sun)
+        recurrence_end_date: Optional end date for recurring series
+        series_id: UUID linking recurring task instances
+        instance_number: Position in recurring series (1, 2, 3...)
+        reminder_settings: List of reminder configurations
         created_at: DateTime of creation (auto-generated)
         updated_at: DateTime of last update (auto-generated)
         created_timestamp: DateTime of creation (deprecated, for backward compatibility)
@@ -43,7 +64,15 @@ class Task:
     priority: Priority = Priority.MEDIUM
     categories: list[str] = field(default_factory=list)
     due_date: Optional[datetime] = None
+    due_time: Optional[time] = None
     status: TaskStatus = TaskStatus.PENDING
+    recurrence_pattern: Optional[RecurrencePattern] = None
+    recurrence_interval: int = 1
+    recurrence_weekdays: Optional[list[int]] = None
+    recurrence_end_date: Optional[datetime] = None
+    series_id: Optional[str] = None
+    instance_number: Optional[int] = None
+    reminder_settings: list = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
     created_timestamp: Optional[datetime] = None
@@ -92,6 +121,24 @@ class Task:
             for cat in self.categories:
                 if len(cat) > 50:
                     raise ValueError(f"Category '{cat}' exceeds 50 characters")
+
+        # Validate recurrence fields
+        if self.recurrence_pattern is not None:
+            if self.recurrence_interval < 1:
+                raise ValueError("recurrence_interval must be >= 1")
+
+        if self.recurrence_weekdays is not None:
+            for day in self.recurrence_weekdays:
+                if not (0 <= day <= 6):
+                    raise ValueError("recurrence_weekdays values must be 0-6")
+
+        if self.instance_number is not None:
+            if self.instance_number < 1:
+                raise ValueError("instance_number must be >= 1")
+
+        # Validate reminder_settings requires due_time
+        if self.reminder_settings and not self.due_time:
+            raise ValueError("reminder_settings requires due_time to be set")
 
     def update_status(self, new_status: TaskStatus):
         """Update the task status and refresh the updated timestamp."""
@@ -177,7 +224,15 @@ class Task:
             "priority": self.priority.value,
             "categories": self.categories,
             "due_date": self.due_date.isoformat() if self.due_date else None,
+            "due_time": self.due_time.isoformat() if self.due_time else None,
             "status": self.status.value,
+            "recurrence_pattern": self.recurrence_pattern.value if self.recurrence_pattern else None,
+            "recurrence_interval": self.recurrence_interval,
+            "recurrence_weekdays": self.recurrence_weekdays,
+            "recurrence_end_date": self.recurrence_end_date.isoformat() if self.recurrence_end_date else None,
+            "series_id": self.series_id,
+            "instance_number": self.instance_number,
+            "reminder_settings": [rs.to_dict() for rs in self.reminder_settings] if self.reminder_settings else [],
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
             "created_timestamp": self.created_timestamp.isoformat(),
@@ -195,9 +250,39 @@ class Task:
         Returns:
             Task instance
         """
+        # Import here to avoid circular dependency
+        from .reminder import ReminderSetting
+
         # Handle both old and new timestamp field names
         created_at = data.get("created_at") or data.get("created_timestamp")
         updated_at = data.get("updated_at") or data.get("updated_timestamp")
+
+        # Parse due_time if present
+        due_time = None
+        if data.get("due_time"):
+            if isinstance(data["due_time"], str):
+                # Parse from ISO format string (HH:MM:SS)
+                due_time = time.fromisoformat(data["due_time"])
+            else:
+                due_time = data["due_time"]
+
+        # Parse recurrence_pattern if present
+        recurrence_pattern = None
+        if data.get("recurrence_pattern"):
+            recurrence_pattern = RecurrencePattern(data["recurrence_pattern"])
+
+        # Parse recurrence_end_date if present
+        recurrence_end_date = None
+        if data.get("recurrence_end_date"):
+            recurrence_end_date = datetime.fromisoformat(data["recurrence_end_date"])
+
+        # Parse reminder_settings if present
+        reminder_settings = []
+        if data.get("reminder_settings"):
+            reminder_settings = [
+                ReminderSetting.from_dict(rs) if isinstance(rs, dict) else rs
+                for rs in data["reminder_settings"]
+            ]
 
         return cls(
             id=data["id"],
@@ -207,7 +292,15 @@ class Task:
             priority=Priority(data.get("priority", "medium")),
             categories=data.get("categories", []),
             due_date=datetime.fromisoformat(data["due_date"]) if data.get("due_date") else None,
+            due_time=due_time,
             status=TaskStatus(data.get("status", "pending")),
+            recurrence_pattern=recurrence_pattern,
+            recurrence_interval=data.get("recurrence_interval", 1),
+            recurrence_weekdays=data.get("recurrence_weekdays"),
+            recurrence_end_date=recurrence_end_date,
+            series_id=data.get("series_id"),
+            instance_number=data.get("instance_number"),
+            reminder_settings=reminder_settings,
             created_at=datetime.fromisoformat(created_at) if created_at else datetime.now(),
             updated_at=datetime.fromisoformat(updated_at) if updated_at else datetime.now()
         )

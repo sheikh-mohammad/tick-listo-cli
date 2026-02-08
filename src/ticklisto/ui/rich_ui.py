@@ -7,10 +7,11 @@ from rich.text import Text
 from rich.panel import Panel
 from rich.layout import Layout
 from rich.align import Align
-from datetime import datetime
+from datetime import datetime, time
 from typing import List, Optional
 from ..models.task import Task, TaskStatus, Priority
 from ..models.rich_ui_config import RichUIConfig
+from ..utils.time_utils import format_datetime_with_time
 
 
 class RichUI:
@@ -152,6 +153,7 @@ class RichUI:
         table.add_column("Priority", width=12)
         table.add_column("Categories", width=20)
         table.add_column("Due Date", width=12)
+        table.add_column("Reminders", width=10)
         table.add_column("Status", justify="center", width=12)
 
         for task in tasks:
@@ -161,14 +163,35 @@ class RichUI:
             # Categories display
             categories_display = self.format_categories(task.categories)
 
-            # Due date display
+            # Title with recurrence indicator (T040 - User Story 2, T087 - User Story 5)
+            title_display = task.title
+            if task.recurrence_pattern:
+                # Add recurrence icon and pattern
+                pattern_label = task.recurrence_pattern.value if hasattr(task.recurrence_pattern, 'value') else str(task.recurrence_pattern)
+
+                # Add instance number if available (T087 - User Story 5)
+                instance_info = ""
+                if task.instance_number:
+                    instance_info = f" [dim]#{task.instance_number}[/dim]"
+
+                title_display = f"🔁 {task.title}{instance_info} [dim]({pattern_label})[/dim]"
+
+            # Due date display with time support (T023 - User Story 1)
             if task.due_date:
-                due_date_display = task.due_date.strftime("%Y-%m-%d")
+                # Format with time if available
+                due_date_display = format_datetime_with_time(task.due_date, task.due_time)
                 # Check if overdue
                 if task.is_overdue():
                     due_date_display = f"[red]{due_date_display}[/red]"
             else:
                 due_date_display = "[dim]-[/dim]"
+
+            # Reminders display (T094 - User Story 6)
+            if task.reminder_settings and len(task.reminder_settings) > 0:
+                reminder_count = len(task.reminder_settings)
+                reminders_display = f"🔔 {reminder_count}"
+            else:
+                reminders_display = "[dim]-[/dim]"
 
             # Status with color coding
             if task.status == TaskStatus.COMPLETED or task.completed:
@@ -180,10 +203,11 @@ class RichUI:
 
             table.add_row(
                 str(task.id),
-                task.title,
+                title_display,
                 priority_display,
                 categories_display,
                 due_date_display,
+                reminders_display,
                 status_display
             )
 

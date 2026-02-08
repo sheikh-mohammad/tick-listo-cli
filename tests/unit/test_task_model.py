@@ -3,8 +3,9 @@ Unit tests for enhanced Task model with priority, categories, and due_date.
 Following TDD approach - these tests are written FIRST and should FAIL initially.
 """
 import pytest
-from datetime import datetime, timedelta
-from ticklisto.models.task import Task, Priority
+from datetime import datetime, timedelta, time
+from ticklisto.models.task import Task, Priority, TaskStatus, RecurrencePattern
+from ticklisto.models.reminder import ReminderSetting
 
 
 class TestPriorityEnum:
@@ -241,3 +242,159 @@ class TestTaskHelperMethods:
         task = Task(id=1, title="Test", categories=["work", "urgent"])
         assert task.has_all_categories(["work", "urgent"]) is True
         assert task.has_all_categories(["work", "home"]) is False
+
+
+class TestTaskWithDueTime:
+    """Test Task model with due_time field (T011 - User Story 1)."""
+
+    def test_task_with_due_time(self):
+        """Test creating task with due_time."""
+        task = Task(
+            id=1,
+            title="Meeting",
+            due_date=datetime(2026, 2, 15, 0, 0, 0),
+            due_time=time(14, 30)
+        )
+        assert task.due_time == time(14, 30)
+        assert task.due_date == datetime(2026, 2, 15, 0, 0, 0)
+
+    def test_task_without_due_time(self):
+        """Test creating task without due_time (backward compatibility)."""
+        task = Task(
+            id=1,
+            title="Task without time",
+            due_date=datetime(2026, 2, 15, 0, 0, 0)
+        )
+        assert task.due_time is None
+        assert task.due_date == datetime(2026, 2, 15, 0, 0, 0)
+
+    def test_task_serialization_with_due_time(self):
+        """Test Task.to_dict() includes due_time."""
+        task = Task(
+            id=1,
+            title="Meeting",
+            due_date=datetime(2026, 2, 15, 0, 0, 0),
+            due_time=time(14, 30)
+        )
+        data = task.to_dict()
+        assert data["due_time"] == "14:30:00"
+        assert "due_date" in data
+
+    def test_task_serialization_without_due_time(self):
+        """Test Task.to_dict() handles None due_time."""
+        task = Task(
+            id=1,
+            title="Task",
+            due_date=datetime(2026, 2, 15, 0, 0, 0)
+        )
+        data = task.to_dict()
+        assert data["due_time"] is None
+
+    def test_task_deserialization_with_due_time(self):
+        """Test Task.from_dict() loads due_time."""
+        data = {
+            "id": 1,
+            "title": "Meeting",
+            "due_date": "2026-02-15T00:00:00",
+            "due_time": "14:30:00",
+            "created_at": "2026-02-08T10:00:00",
+            "updated_at": "2026-02-08T10:00:00"
+        }
+        task = Task.from_dict(data)
+        assert task.due_time == time(14, 30)
+        assert task.due_date == datetime(2026, 2, 15, 0, 0, 0)
+
+    def test_task_deserialization_without_due_time(self):
+        """Test Task.from_dict() handles missing due_time (backward compatibility)."""
+        data = {
+            "id": 1,
+            "title": "Task",
+            "due_date": "2026-02-15T00:00:00",
+            "created_at": "2026-02-08T10:00:00",
+            "updated_at": "2026-02-08T10:00:00"
+        }
+        task = Task.from_dict(data)
+        assert task.due_time is None
+
+    def test_task_with_reminder_settings(self):
+        """Test task with reminder_settings field."""
+        reminder1 = ReminderSetting(offset_minutes=60, label="1 hour before")
+        reminder2 = ReminderSetting(offset_minutes=1440, label="1 day before")
+
+        task = Task(
+            id=1,
+            title="Meeting",
+            due_date=datetime(2026, 2, 15, 0, 0, 0),
+            due_time=time(14, 30),
+            reminder_settings=[reminder1, reminder2]
+        )
+
+        assert len(task.reminder_settings) == 2
+        assert task.reminder_settings[0].offset_minutes == 60
+        assert task.reminder_settings[1].offset_minutes == 1440
+
+    def test_task_serialization_with_reminder_settings(self):
+        """Test Task.to_dict() includes reminder_settings."""
+        reminder = ReminderSetting(offset_minutes=60, label="1 hour before")
+        task = Task(
+            id=1,
+            title="Meeting",
+            due_date=datetime(2026, 2, 15, 0, 0, 0),
+            due_time=time(14, 30),
+            reminder_settings=[reminder]
+        )
+
+        data = task.to_dict()
+        assert "reminder_settings" in data
+        assert len(data["reminder_settings"]) == 1
+        assert data["reminder_settings"][0]["offset_minutes"] == 60
+
+    def test_task_with_recurrence_fields(self):
+        """Test task with recurrence fields."""
+        task = Task(
+            id=1,
+            title="Weekly meeting",
+            due_date=datetime(2026, 2, 15, 0, 0, 0),
+            due_time=time(14, 30),
+            recurrence_pattern=RecurrencePattern.WEEKLY,
+            recurrence_interval=1,
+            series_id="test-series-123",
+            instance_number=1
+        )
+
+        assert task.recurrence_pattern == RecurrencePattern.WEEKLY
+        assert task.recurrence_interval == 1
+        assert task.series_id == "test-series-123"
+        assert task.instance_number == 1
+
+    def test_task_validation_reminder_requires_due_time(self):
+        """Test that reminder_settings requires due_time."""
+        reminder = ReminderSetting(offset_minutes=60, label="1 hour before")
+
+        with pytest.raises(ValueError, match="reminder_settings requires due_time"):
+            Task(
+                id=1,
+                title="Task",
+                due_date=datetime(2026, 2, 15, 0, 0, 0),
+                reminder_settings=[reminder]
+            )
+
+    def test_task_validation_recurrence_interval(self):
+        """Test that recurrence_interval must be >= 1."""
+        with pytest.raises(ValueError, match="recurrence_interval must be >= 1"):
+            Task(
+                id=1,
+                title="Task",
+                recurrence_pattern=RecurrencePattern.DAILY,
+                recurrence_interval=0
+            )
+
+    def test_task_validation_instance_number(self):
+        """Test that instance_number must be >= 1."""
+        with pytest.raises(ValueError, match="instance_number must be >= 1"):
+            Task(
+                id=1,
+                title="Task",
+                series_id="test-123",
+                instance_number=0
+            )

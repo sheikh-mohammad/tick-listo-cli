@@ -1,0 +1,46 @@
+[
+  {
+    "id": "rem-1",
+    "task_id": 1,
+    "scheduled_time": "2026-02-20T14:30:00",
+    "offset_minutes": 30,
+    "status": "cancelled",
+    "retry_count": 0,
+    "last_attempt_time": null,
+    "error_message": null,
+    "sent_time": null
+  },
+  {
+    "id": "rem-2",
+    "task_id": 1,
+    "scheduled_time": "2026-02-20T13:00:00",
+    "offset_minutes": 120,
+    "status": "cancelled",
+    "retry_count": 0,
+    "last_attempt_time": null,
+    "error_message": null,
+    "sent_time": null
+  },
+  {
+    "id": "rem-3",
+    "task_id": 1,
+    "scheduled_time": "2026-02-19T15:00:00",
+    "offset_minutes": 1440,
+    "status": "cancelled",
+    "retry_count": 0,
+    "last_attempt_time": null,
+    "error_message": null,
+    "sent_time": null
+  },
+  {
+    "id": "rem-4",
+    "task_id": 2,
+    "scheduled_time": "2026-02-20T14:00:00",
+    "offset_minutes": 60,
+    "status": "pending",
+    "retry_count": 0,
+    "last_attempt_time": null,
+    "error_message": null,
+    "sent_time": null
+  }
+]

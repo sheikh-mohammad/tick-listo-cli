@@ -61,4 +61,12 @@ Thumbs.db
 uv.lock
 
 # Project specific
-ticklisto_data.json
+# ticklisto_data.json
+# reminders.json
+# config/
+# config.json
+
+# Gmail Credentials
+credentials/
+token.json
+credentials.json
