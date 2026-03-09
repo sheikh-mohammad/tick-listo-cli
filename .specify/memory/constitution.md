@@ -1,5 +1,5 @@
 <!-- Sync Impact Report:
-Version change: 2.2.5 → 2.2.6 (Renamed the app to tick listo)
+Version change: 2.2.6 → 2.2.7 (Renamed the app to tick listo cli)
 Added sections: none
 Modified sections: whole constitution
 Removed sections: none
@@ -7,7 +7,7 @@ Templates requiring updates: ⚠ pending manual review of .specify/templates/pla
 Follow-up TODOs: none
 -->
 
-# Tick Listo Constitution
+# Tick Listo CLI Constitution
 
 ## Table of Contents
 - [Core Principles](#core-principles)
@@ -91,6 +91,9 @@ Maintain clear separation between different modules and functions within the con
 
 ## Changelog
 
+## Version 2.2.7 - 2026-03-09
+- Updated the app name to tick listo cli
+
 ## Version 2.2.6 - 2026-01-29
 - Updated the app name to tick listo
 
@@ -132,4 +135,4 @@ Maintain clear separation between different modules and functions within the con
 
 This constitution supersedes all other development practices. Amendments require documentation of the change, approval from project maintainers, and a migration plan for existing code. All development activities must comply with these principles and can be audited for compliance.
 
-**Version**: 2.2.6 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-29
+**Version**: 2.2.7 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-03-09

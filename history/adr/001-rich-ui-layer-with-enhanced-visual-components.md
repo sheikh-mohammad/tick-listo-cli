@@ -52,6 +52,6 @@ The implementation will include:
 
 ## References
 
-- specs/001-ticklisto-basic-console-app/spec.md
-- specs/001-ticklisto-basic-console-app/research.md
-- specs/001-ticklisto-basic-console-app/plan.md
+- specs/001-tick-listo-cli-basic-console-app/spec.md
+- specs/001-tick-listo-cli-basic-console-app/research.md
+- specs/001-tick-listo-cli-basic-console-app/plan.md

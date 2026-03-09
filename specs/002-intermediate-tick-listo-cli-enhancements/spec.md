@@ -1,6 +1,6 @@
 # Feature Specification: Intermediate Ticklisto Enhancements
 
-**Feature Branch**: `002-intermediate-ticklisto-enhancements`
+**Feature Branch**: `002-intermediate-tick-listo-cli-enhancements`
 **Created**: 2026-01-31
 **Updated**: 2026-02-03
 **Status**: Completed

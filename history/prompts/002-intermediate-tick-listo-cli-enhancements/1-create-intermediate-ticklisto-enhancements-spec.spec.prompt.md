@@ -5,7 +5,7 @@ stage: spec
 date_iso: 2026-01-31
 surface: agent
 model: claude-sonnet-4-5-20250929
-feature: intermediate-ticklisto-enhancements
+feature: intermediate-tick-listo-cli-enhancements
 branch: 002-intermediate-ticklisto-enhancements
 user: dell
 command: /sp.specify

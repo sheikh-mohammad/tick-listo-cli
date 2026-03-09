@@ -6,7 +6,7 @@ date_iso: 2026-01-29
 surface: agent
 model: claude-sonnet-4-5-20250929
 feature: ticklisto-rich-enhancement
-branch: 001-ticklisto-basic-console-app
+branch: 001-tick-listo-cli-basic-console-app
 user: dell
 command: /sp.plan
 labels: ["plan", "ui", "rich", "enhancement"]
@@ -16,8 +16,8 @@ links:
   adr: "history/adr/001-rich-ui-layer-with-enhanced-visual-components.md"
   pr: null
 files_yaml: |
-  - specs/001-ticklisto-basic-console-app/plan.md
-  - specs/001-ticklisto-basic-console-app/research.md
+  - specs/001-tick-listo-cli-basic-console-app/plan.md
+  - specs/001-tick-listo-cli-basic-console-app/research.md
   - specs/001-ticklisto-basic-console-app/data-model.md
   - specs/001-ticklisto-basic-console-app/quickstart.md
 tests_yaml: |

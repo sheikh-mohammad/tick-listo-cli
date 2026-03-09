@@ -32,9 +32,9 @@ prompt_text: |
                             ███████║██║     ███████╗╚██████╗██║██║        ██║   ██║     ███████╗╚██████╔╝███████║
                             ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝   ╚═╝     ╚══════╝ ╚═════╝ ╚══════╝
 
-                                         Panaversity SpecKit Plus - Spec-Driven Development Toolkit
+                                         Tick Listo CLI - Your Ultimate Task Management Companion - Where Productivity Meets Elegance
 
-  2. Branding Update: Replace "Panaversity SpecKit Plus - Spec-Driven Development Toolkit" with "Tick Listo - Your Ultimate Task Management Companion - Where Productivity Meets Elegance"
+  2. Branding Update: Replace "Tick Listo CLI - Your Ultimate Task Management Companion - Where Productivity Meets Elegance" with "Tick Listo - Your Ultimate Task Management Companion - Where Productivity Meets Elegance"
 
   3. Interface Beautification Requirements using Rich:
      - Color-coded task statuses (green for completed, red for pending, yellow for in-progress)

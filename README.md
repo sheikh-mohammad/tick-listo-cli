@@ -1,4 +1,13 @@
-# Tick Listo
+████████╗██╗ ██████╗██╗  ██╗    ██╗     ██╗███████╗████████╗ ██████╗      ██████╗██╗     ██╗
+╚══██╔══╝██║██╔════╝██║ ██╔╝    ██║     ██║██╔════╝╚══██╔══╝██╔═══██╗    ██╔════╝██║     ██║
+   ██║   ██║██║     █████╔╝     ██║     ██║███████╗   ██║   ██║   ██║    ██║     ██║     ██║
+   ██║   ██║██║     ██╔═██╗     ██║     ██║╚════██║   ██║   ██║   ██║    ██║     ██║     ██║
+   ██║   ██║╚██████╗██║  ██╗    ███████╗██║███████║   ██║   ╚██████╔╝    ╚██████╗███████╗██║
+   ╚═╝   ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝    ╚═════╝      ╚═════╝╚══════╝╚═╝
+
+Tick Listo CLI - Your Ultimate Task Management Companion - Where Productivity Meets Elegance
+
+# Tick Listo CLI
 
 A command-line task management application with **persistent JSON storage** and advanced organization features. Built with Python 3.14+ and Rich for beautiful console formatting.
 
@@ -598,3 +607,8 @@ The application maintains full backward compatibility with existing task data. T
 ## License
 
 This project is part of a hackathon and is provided as-is for educational purposes.
+
+This project is for educational purposes only.
+
+**READ ONLY - DO NOT COPY**
+Any use of this project's code, ideas, or concepts must include proper attribution and credit to the original authors. If you use any part of this project or draw inspiration from it, please clearly reference this repository and provide appropriate credit in your work.
