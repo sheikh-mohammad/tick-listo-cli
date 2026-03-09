@@ -62,3 +62,7 @@ uv.lock
 
 # Project specific
 ticklisto_data.json
+
+# Credentials
+token.json
+credentials.json
