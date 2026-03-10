@@ -1,7 +1,7 @@
 <!-- Sync Impact Report:
-Version change: 2.2.6 → 2.2.7 (Renamed the app to tick listo cli)
+Version change: 2.2.7 → 2.2.8 (Fix formatting issue in changelog section)
 Added sections: none
-Modified sections: whole constitution
+Modified sections: Changelog
 Removed sections: none
 Templates requiring updates: ⚠ pending manual review of .specify/templates/plan-template.md, .specify/templates/spec-template.md, .specify/templates/tasks-template.md
 Follow-up TODOs: none
@@ -91,10 +91,13 @@ Maintain clear separation between different modules and functions within the con
 
 ## Changelog
 
-## Version 2.2.7 - 2026-03-09
+### Version 2.2.8 - 2026-03-10
+- Fix formatting issue in changelog section
+
+### Version 2.2.7 - 2026-03-09
 - Updated the app name to tick listo cli
 
-## Version 2.2.6 - 2026-01-29
+### Version 2.2.6 - 2026-01-29
 - Updated the app name to tick listo
 
 ### Version 2.2.5 - 2026-01-28
@@ -135,4 +138,4 @@ Maintain clear separation between different modules and functions within the con
 
 This constitution supersedes all other development practices. Amendments require documentation of the change, approval from project maintainers, and a migration plan for existing code. All development activities must comply with these principles and can be audited for compliance.
 
-**Version**: 2.2.7 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-03-09
+**Version**: 2.2.8 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-03-10
