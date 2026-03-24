@@ -1,6 +1,6 @@
-"""Main entry point for the ticklisto package."""
+"""Main entry point for the tick-listo-cli package."""
 
-from .ticklisto.cli.ticklisto_cli import main
+from .tick_listo_cli.cli.tick_listo_cli import main
 
 if __name__ == "__main__":
     main()
