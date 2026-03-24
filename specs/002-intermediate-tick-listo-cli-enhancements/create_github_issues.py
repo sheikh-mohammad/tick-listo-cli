@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Script to create GitHub issues for all 80 tasks from tasks.md
-Repository: sheikh-mohammad/hackathon-ii-evolution-of-todo
+Repository: sheikh-mohammad/tick-listo-cli
 """
 
 import subprocess
@@ -189,7 +189,7 @@ def create_github_issue(task: Dict, dry_run: bool = False) -> bool:
         "--title", title,
         "--body", body,
         "--label", labels,
-        "--repo", "sheikh-mohammad/hackathon-ii-evolution-of-todo"
+        "--repo", "sheikh-mohammad/tick-listo-cli"
     ]
 
     if dry_run:
@@ -226,7 +226,7 @@ def main():
 
     print(f"{'='*80}")
     print(f"GitHub Issue Creation Script")
-    print(f"Repository: sheikh-mohammad/hackathon-ii-evolution-of-todo")
+    print(f"Repository: sheikh-mohammad/tick-listo-cli")
     print(f"Total tasks: {len(tasks)}")
     print(f"Range: T{args.start:03d} to T{args.end:03d}")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'LIVE'}")

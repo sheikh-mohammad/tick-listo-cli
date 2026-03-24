@@ -1,11 +1,11 @@
-# Data Model: Tick Listo Basic Console App
+# Data Model: Tick Listo CLI Basic Console App
 
-**Feature**: Tick Listo Basic Console App (Phase I)
+**Feature**: Tick Listo CLI Basic Console App (Phase I)
 **Date**: 2026-01-28
 
 ## Overview
 
-This document defines the data model for the Phase I Tick Listo Basic Console App, including entity definitions, relationships, validation rules, and state transitions based on the feature requirements.
+This document defines the data model for the Phase I Tick Listo CLI Basic Console App, including entity definitions, relationships, validation rules, and state transitions based on the feature requirements.
 
 ## Entities
 

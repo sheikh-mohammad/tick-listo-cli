@@ -1,11 +1,11 @@
-# Quickstart Guide: Tick Listo Basic Console App
+# Quickstart Guide: Tick Listo CLI Basic Console App
 
-**Feature**: Tick Listo Basic Console App (Phase I)
+**Feature**: Tick Listo CLI Basic Console App (Phase I)
 **Date**: 2026-01-28
 
 ## Overview
 
-This guide provides step-by-step instructions to get started with the Phase I Tick Listo Basic Console App, including installation, setup, and basic usage.
+This guide provides step-by-step instructions to get started with the Phase I Tick Listo CLI Basic Console App, including installation, setup, and basic usage.
 
 ## Prerequisites
 

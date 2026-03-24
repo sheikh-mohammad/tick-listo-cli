@@ -1,7 +1,7 @@
 [project]
-name = "ticklisto"
+name = "tick-listo-cli"
 version = "0.1.0"
-description = "Tick Listo - Your Ultimate Task Management - Where Productivity Meets Elegance"
+description = "Tick Listo CLI - Your Ultimate Task Management - Where Productivity Meets Elegance"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

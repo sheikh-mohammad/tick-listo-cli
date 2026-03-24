@@ -4,7 +4,7 @@ import sys
 from unittest.mock import patch, MagicMock
 import pytest
 
-from ticklisto.utils.terminal_utils import TerminalUtils, get_platform
+from tick_listo_cli.utils.terminal_utils import TerminalUtils, get_platform
 
 
 class TestPlatformDetection:

@@ -1,6 +1,6 @@
-# Research: Tick Listo Rich Console Enhancement
+# Research: Tick Listo CLI Rich Console Enhancement
 
-**Feature**: Tick Listo Rich Console Enhancement (Phase I)
+**Feature**: Tick Listo CLI Rich Console Enhancement (Phase I)
 **Date**: 2026-01-29
 
 ## Overview

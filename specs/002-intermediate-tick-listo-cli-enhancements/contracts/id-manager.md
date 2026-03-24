@@ -2,7 +2,7 @@
 
 **Service**: IDManager
 **Purpose**: Manage auto-incrementing task IDs with persistence and reset capability
-**Module**: `src/ticklisto/services/id_manager.py`
+**Module**: `src/tick_listo_cli/services/id_manager.py`
 
 ## Interface
 
@@ -288,6 +288,6 @@ storage_service.save_to_json(data)
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-03
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

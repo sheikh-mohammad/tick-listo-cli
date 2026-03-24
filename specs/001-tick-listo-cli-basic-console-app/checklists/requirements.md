@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Tick Listo Rich Console Enhancement
+# Specification Quality Checklist: Tick Listo CLI Rich Console Enhancement
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-01-29

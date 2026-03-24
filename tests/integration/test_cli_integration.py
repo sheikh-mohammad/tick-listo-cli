@@ -2,8 +2,8 @@ import pytest
 import io
 import sys
 from unittest.mock import patch, MagicMock
-from ticklisto.cli.ticklisto_cli import TickListoCLI
-from ticklisto.services.task_service import TaskService
+from tick_listo.cli.tick_listo_cli import TickListoCLI
+from tick_listo.services.task_service import TaskService
 
 
 class TestCLIIntegration:

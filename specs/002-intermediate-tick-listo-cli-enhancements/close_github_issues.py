@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Script to close all GitHub issues for completed tasks from spec 002.
-Repository: sheikh-mohammad/hackathon-ii-evolution-of-todo
+Repository: sheikh-mohammad/tick-listo-cli
 """
 
 import subprocess
@@ -13,7 +13,7 @@ def get_open_issues():
     """Get all open issues for the repository."""
     cmd = [
         "gh", "issue", "list",
-        "--repo", "sheikh-mohammad/hackathon-ii-evolution-of-todo",
+        "--repo", "sheikh-mohammad/tick-listo-cli",
         "--state", "open",
         "--json", "number,title,labels",
         "--limit", "1000"
@@ -46,14 +46,14 @@ Closing as completed."""
     # Add comment
     comment_cmd = [
         "gh", "issue", "comment", str(issue_number),
-        "--repo", "sheikh-mohammad/hackathon-ii-evolution-of-todo",
+        "--repo", "sheikh-mohammad/tick-listo-cli",
         "--body", comment
     ]
 
     # Close issue
     close_cmd = [
         "gh", "issue", "close", str(issue_number),
-        "--repo", "sheikh-mohammad/hackathon-ii-evolution-of-todo",
+        "--repo", "sheikh-mohammad/tick-listo-cli",
         "--reason", "completed"
     ]
 
@@ -85,7 +85,7 @@ def main():
 
     print("=" * 80)
     print("GitHub Issue Closure Script")
-    print("Repository: sheikh-mohammad/hackathon-ii-evolution-of-todo")
+    print("Repository: sheikh-mohammad/tick-listo-cli")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'LIVE'}")
     print("=" * 80)
     print()

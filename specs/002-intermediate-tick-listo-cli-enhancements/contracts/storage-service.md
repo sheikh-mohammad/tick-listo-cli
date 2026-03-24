@@ -2,7 +2,7 @@
 
 **Service**: StorageService
 **Purpose**: Provide JSON file persistence for tasks with atomic write operations
-**Module**: `src/ticklisto/services/storage_service.py`
+**Module**: `src/tick_listo_cli/services/storage_service.py`
 
 ## Interface
 
@@ -13,12 +13,12 @@ Load tasks from JSON file with error handling for corrupted files.
 #### Signature
 
 ```python
-def load_from_json(file_path: str = "ticklisto_data.json") -> dict:
+def load_from_json(file_path: str = "tick_listo_cli_data.json") -> dict:
     """
     Load tasks and metadata from JSON file.
 
     Args:
-        file_path: Path to JSON file (default: ticklisto_data.json)
+        file_path: Path to JSON file (default: tick_listo_cli_data.json)
 
     Returns:
         Dictionary containing:
@@ -35,7 +35,7 @@ def load_from_json(file_path: str = "ticklisto_data.json") -> dict:
 
 | Parameter | Type | Required | Default | Constraints | Description |
 |-----------|------|----------|---------|-------------|-------------|
-| file_path | str | No | "ticklisto_data.json" | Valid file path | Path to JSON storage file |
+| file_path | str | No | "tick_listo_cli_data.json" | Valid file path | Path to JSON storage file |
 
 #### Output
 
@@ -54,11 +54,11 @@ def load_from_json(file_path: str = "ticklisto_data.json") -> dict:
 
 ```python
 # Example 1: Load from existing file
-data = load_from_json("ticklisto_data.json")
+data = load_from_json("tick_listo_cli_data.json")
 # Returns: {"tasks": [...], "next_id": 5}
 
 # Example 2: File doesn't exist (first run)
-data = load_from_json("ticklisto_data.json")
+data = load_from_json("tick_listo_cli_data.json")
 # Returns: {"tasks": [], "next_id": 1}
 
 # Example 3: Corrupted JSON
@@ -75,13 +75,13 @@ Save tasks to JSON file with atomic write operation (temp file + rename).
 #### Signature
 
 ```python
-def save_to_json(data: dict, file_path: str = "ticklisto_data.json") -> None:
+def save_to_json(data: dict, file_path: str = "tick_listo_cli_data.json") -> None:
     """
     Save tasks and metadata to JSON file atomically.
 
     Args:
         data: Dictionary containing tasks and next_id
-        file_path: Path to JSON file (default: ticklisto_data.json)
+        file_path: Path to JSON file (default: tick_listo_cli_data.json)
 
     Raises:
         ValueError: If data structure is invalid
@@ -94,7 +94,7 @@ def save_to_json(data: dict, file_path: str = "ticklisto_data.json") -> None:
 | Parameter | Type | Required | Default | Constraints | Description |
 |-----------|------|----------|---------|-------------|-------------|
 | data | dict | Yes | - | Must have 'tasks' and 'next_id' keys | Data to save |
-| file_path | str | No | "ticklisto_data.json" | Valid file path | Path to JSON storage file |
+| file_path | str | No | "tick_listo_cli_data.json" | Valid file path | Path to JSON storage file |
 
 #### Output
 
@@ -114,9 +114,9 @@ def save_to_json(data: dict, file_path: str = "ticklisto_data.json") -> None:
 
 ```
 1. Validate data structure
-2. Write to ticklisto_data.json.tmp
+2. Write to tick_listo_cli_data.json.tmp
 3. Flush and sync to disk
-4. Rename .tmp to ticklisto_data.json (atomic operation)
+4. Rename .tmp to tick_listo_cli_data.json (atomic operation)
 5. If any step fails, original file remains unchanged
 ```
 
@@ -131,7 +131,7 @@ data = {
     ],
     "next_id": 3
 }
-save_to_json(data, "ticklisto_data.json")
+save_to_json(data, "tick_listo_cli_data.json")
 # File saved atomically
 
 # Example 2: Invalid data structure
@@ -208,6 +208,6 @@ save_to_json(data)
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-03
+**Contract Version**: 2.1
+**Date**: 2026-03-24
 **Status**: Approved

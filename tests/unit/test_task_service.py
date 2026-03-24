@@ -3,8 +3,8 @@ import os
 import tempfile
 from datetime import datetime
 from unittest.mock import Mock, patch
-from ticklisto.services.task_service import TaskService
-from ticklisto.models.task import Task, Priority
+from tick_listo_cli.services.task_service import TaskService
+from tick_listo_cli.models.task import Task, Priority
 
 
 class TestTaskService:

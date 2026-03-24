@@ -4,7 +4,7 @@ Following TDD approach - these tests are written FIRST and should FAIL initially
 """
 import pytest
 from datetime import datetime, timedelta
-from ticklisto.utils.date_parser import parse_flexible_date
+from tick_listo_cli.utils.date_parser import parse_flexible_date
 
 
 class TestDateParser:

@@ -4,8 +4,8 @@ Following TDD approach - these tests are written FIRST and should FAIL initially
 """
 import pytest
 from datetime import datetime, timedelta
-from ticklisto.models.task import Task, Priority
-from ticklisto.services.sort_service import SortService
+from tick_listo_cli.models.task import Task, Priority
+from tick_listo_cli.services.sort_service import SortService
 
 
 class TestSortService:

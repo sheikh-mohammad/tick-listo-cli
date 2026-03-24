@@ -2,8 +2,8 @@
 ValidationService for task field validation.
 Provides validation for priority, categories, and date inputs.
 """
-from ticklisto.models.task import Priority
-from ticklisto.utils.date_parser import parse_flexible_date
+from tick_listo_cli.models.task import Priority
+from tick_listo_cli.utils.date_parser import parse_flexible_date
 from datetime import datetime
 
 

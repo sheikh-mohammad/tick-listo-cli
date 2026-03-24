@@ -2,7 +2,7 @@
 
 **Service**: ValidationService
 **Purpose**: Provide input validation for task fields
-**Module**: `src/ticklisto/services/validation_service.py`
+**Module**: `src/tick_listo_cli/services/validation_service.py`
 
 ## Interface
 
@@ -342,6 +342,6 @@ except ValueError as e:
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-01
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

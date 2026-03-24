@@ -5,7 +5,7 @@
 
 ## Context
 
-The Tick Listo console application requires a visually appealing, professional, and user-friendly command-line interface that goes beyond basic text output. The original specification called for basic Rich formatting, but the enhanced requirements demand a comprehensive visual overhaul including ASCII art headers, color-coded task statuses, styled tables, progress bars, and enhanced user experience elements.
+The Tick Listo CLI console application requires a visually appealing, professional, and user-friendly command-line interface that goes beyond basic text output. The original specification called for basic Rich formatting, but the enhanced requirements demand a comprehensive visual overhaul including ASCII art headers, color-coded task statuses, styled tables, progress bars, and enhanced user experience elements.
 
 The decision was made to implement a comprehensive Rich UI layer that provides:
 - ASCII art header with branded messaging

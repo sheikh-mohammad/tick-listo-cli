@@ -2,7 +2,7 @@
 
 import pytest
 
-from ticklisto.services.id_manager import IDManager
+from tick_listo_cli.services.id_manager import IDManager
 
 
 class TestIDGeneration:

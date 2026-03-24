@@ -4,8 +4,8 @@ These tests verify that the CLI interface conforms to the expected contract/beha
 """
 
 import pytest
-from ticklisto.cli.ticklisto_cli import TickListoCLI
-from ticklisto.services.task_service import TaskService
+from tick_listo_cli.cli.tick_listo_cli import TickListoCLI
+from tick_listo_cli.services.task_service import TaskService
 
 
 class TestCLIContract:

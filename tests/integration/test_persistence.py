@@ -7,10 +7,10 @@ from datetime import datetime
 
 import pytest
 
-from ticklisto.models.task import Priority, Task
-from ticklisto.services.id_manager import IDManager
-from ticklisto.services.storage_service import StorageService
-from ticklisto.services.task_service import TaskService
+from tick_listo_cli.models.task import Priority, Task
+from tick_listo_cli.services.id_manager import IDManager
+from tick_listo_cli.services.storage_service import StorageService
+from tick_listo_cli.services.task_service import TaskService
 
 
 class TestTaskPersistenceAcrossRestarts:

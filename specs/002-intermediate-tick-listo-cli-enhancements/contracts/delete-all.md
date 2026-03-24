@@ -2,7 +2,7 @@
 
 **Feature**: Delete All Tasks
 **Purpose**: Provide bulk deletion of all tasks with confirmation prompt and ID counter reset
-**Module**: `src/ticklisto/cli/commands.py` (command handler)
+**Module**: `src/tick_listo_cli/cli/commands.py` (command handler)
 
 ## Interface
 
@@ -273,6 +273,6 @@ No tasks to delete.
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-03
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

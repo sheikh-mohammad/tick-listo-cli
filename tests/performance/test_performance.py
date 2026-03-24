@@ -1,5 +1,5 @@
 """
-Performance validation script for Ticklisto.
+Performance validation script for Tick Listo CLI.
 Tests search, filter, and sort operations with 10,000 tasks.
 
 Performance targets:
@@ -18,10 +18,10 @@ sys.path.insert(0, str(project_root / "src"))
 import time
 from datetime import datetime, timedelta
 import random
-from ticklisto.models.task import Task, Priority
-from ticklisto.services.search_service import SearchService
-from ticklisto.services.filter_service import FilterService
-from ticklisto.services.sort_service import SortService
+from tick_listo_cli.models.task import Task, Priority
+from tick_listo_cli.services.search_service import SearchService
+from tick_listo_cli.services.filter_service import FilterService
+from tick_listo_cli.services.sort_service import SortService
 
 
 def generate_test_tasks(count: int) -> list[Task]:
@@ -121,7 +121,7 @@ def run_sort_performance(tasks: list[Task], sort_service: SortService) -> dict:
 def main():
     """Run performance validation."""
     print("=" * 70)
-    print("TICKLISTO PERFORMANCE VALIDATION")
+    print("TICK LISTO CLI PERFORMANCE VALIDATION")
     print("=" * 70)
     print()
 

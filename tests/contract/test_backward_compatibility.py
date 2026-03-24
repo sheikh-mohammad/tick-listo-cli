@@ -5,8 +5,8 @@ Following TDD approach - these tests are written FIRST and should FAIL initially
 """
 import pytest
 from datetime import datetime
-from ticklisto.models.task import Task, Priority, TaskStatus
-from ticklisto.services.task_service import TaskService
+from tick_listo_cli.models.task import Task, Priority, TaskStatus
+from tick_listo_cli.services.task_service import TaskService
 
 
 class TestBackwardCompatibility:

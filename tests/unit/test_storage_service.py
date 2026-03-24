@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from ticklisto.services.storage_service import StorageService
+from tick_listo_cli.services.storage_service import StorageService
 
 
 class TestStorageServiceLoad:

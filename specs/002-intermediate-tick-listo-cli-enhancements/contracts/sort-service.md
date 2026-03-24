@@ -2,7 +2,7 @@
 
 **Service**: SortService
 **Purpose**: Provide multi-level sorting for tasks
-**Module**: `src/ticklisto/services/sort_service.py`
+**Module**: `src/tick_listo_cli/services/sort_service.py`
 
 ## Interface
 
@@ -188,6 +188,6 @@ result = sort_tasks(tasks, "due_date")
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-01
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

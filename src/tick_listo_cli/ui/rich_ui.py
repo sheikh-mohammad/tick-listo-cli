@@ -56,14 +56,14 @@ class RichUI:
         "                      ██║   ██║╚██████╗██║  ██╗    ███████╗██║███████║   ██║   ╚██████╔╝",
         "                      ╚═╝   ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝    ╚═════╝ ",
         "",
-        "          Tick Listo - Your Ultimate Task Management Companion - Where Productivity Meets Elegance"
+        "          Tick Listo CLI - Your Ultimate Task Management Companion - Where Productivity Meets Elegance"
         ]
 
 
         # If terminal is too narrow, display a simplified version
         if terminal_width < 80:
             # Fallback for narrow terminals
-            self.console.print("\n[b]TICK LISTO[/b]\n", style="bold blue")
+            self.console.print("\n[b]TICK LISTO CLI[/b]\n", style="bold blue")
             self.console.print("Your Ultimate Task Management Companion\n", style="italic")
         else:
             # Display the full ASCII art
@@ -75,7 +75,7 @@ class RichUI:
         Display startup message with ASCII art header and branded message.
         """
         self.display_ascii_header()
-        self.console.print("\nWelcome to Tick Listo! Your productivity companion.\n", style="bold blue")
+        self.console.print("\nWelcome to Tick Listo CLI! Your productivity companion.\n", style="bold blue")
 
     def get_priority_style(self, priority: Priority) -> str:
         """

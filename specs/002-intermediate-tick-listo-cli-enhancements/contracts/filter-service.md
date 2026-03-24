@@ -2,7 +2,7 @@
 
 **Service**: FilterService
 **Purpose**: Provide multi-criteria filtering for tasks
-**Module**: `src/ticklisto/services/filter_service.py`
+**Module**: `src/tick_listo_cli/services/filter_service.py`
 
 ## Interface
 
@@ -205,6 +205,6 @@ result = filter_tasks(
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-01
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

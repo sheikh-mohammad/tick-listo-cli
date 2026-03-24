@@ -18,7 +18,7 @@ A command-line task management application with **persistent JSON storage** and 
 ### Core Task Management
 - Add, view, update, delete, and mark tasks as complete/incomplete
 - **Auto-incrementing task IDs** (1, 2, 3...) that persist across sessions
-- **JSON file persistence** (ticklisto_data.json) - tasks survive application restarts
+- **JSON file persistence** (tick_listo_cli_data.json) - tasks survive application restarts
 - Rich-formatted console interface with visual status indicators
 - Sub-second response times for all operations
 - Graceful error handling with informative messages
@@ -34,7 +34,7 @@ A command-line task management application with **persistent JSON storage** and 
 - **Enhanced Clear**: Properly clear terminal buffer (not just scroll)
 
 ### Data Persistence
-- **JSON Storage**: All tasks saved to `ticklisto_data.json` in the project directory
+- **JSON Storage**: All tasks saved to `tick_listo_cli_data.json` in the project directory
 - **Atomic Writes**: Safe file operations prevent data corruption
 - **ID Management**: Task IDs never reused during normal operation
 - **ID Reset**: After "delete all", ID counter resets to 1 for fresh start
@@ -64,14 +64,7 @@ pip install rich pytest python-dateutil
 Run the application:
 
 ```bash
-python -m src.ticklisto
-```
-
-Or alternatively:
-
-```bash
-cd src
-python -m todo_app
+python -m src.tick_listo_cli
 ```
 
 ### Available Commands
@@ -97,7 +90,7 @@ python -m todo_app
 
 ### Example Workflow
 
-1. Start the application: `python -m src.ticklisto`
+1. Start the application: `python -m src.tick_listo_cli`
 2. Add a task: Enter `add` or `a` and follow the prompts (priority and categories required)
 3. View tasks: Enter `view` or `v` to see all tasks
 4. Mark as complete: Enter `complete` or `c` and specify task ID
@@ -157,7 +150,7 @@ Session 2:
 ```
 
 **Data file location:**
-- All tasks stored in `ticklisto_data.json` in the project directory
+- All tasks stored in `tick_listo_cli_data.json` in the project directory
 - File uses atomic write operations for data safety
 - Backup recommended before major operations
 
@@ -483,7 +476,7 @@ Console cleared!
 
 ```
 src/
-├── ticklisto/
+├── tick_listo_cli/
 │   ├── __init__.py
 │   ├── models/
 │   │   ├── __init__.py
@@ -497,7 +490,7 @@ src/
 │   │   └── validation_service.py # Input validation
 │   ├── cli/
 │   │   ├── __init__.py
-│   │   └── ticklisto_cli.py     # Command-line interface with all commands
+│   │   └── tick_listo_cli.py     # Command-line interface with all commands
 │   ├── ui/
 │   │   ├── __init__.py
 │   │   ├── rich_ui.py           # Rich formatting and display
@@ -562,7 +555,7 @@ pytest tests/contract/test_backward_compatibility.py
 To run tests with coverage:
 
 ```bash
-pytest --cov=src/ticklisto --cov-report=html
+pytest --cov=src/tick_listo_cli --cov-report=html
 ```
 
 ### Test Coverage
@@ -584,7 +577,7 @@ The application is optimized for responsive performance:
 
 ## Data Persistence
 
-The application stores tasks in memory during runtime and persists them to a file named `ticklisto_data.json` when exiting. The file is automatically loaded when the application starts.
+The application stores tasks in memory during runtime and persists them to a file named `tick_listo_cli_data.json` when exiting. The file is automatically loaded when the application starts.
 
 ### Data Format
 

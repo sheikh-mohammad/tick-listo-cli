@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from ticklisto.models.task import Task
+from tick_listo_cli.models.task import Task
 
 
 class TestTask:

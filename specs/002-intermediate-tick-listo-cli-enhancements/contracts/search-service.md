@@ -2,7 +2,7 @@
 
 **Service**: SearchService
 **Purpose**: Provide keyword-based search functionality for tasks
-**Module**: `src/ticklisto/services/search_service.py`
+**Module**: `src/tick_listo_cli/services/search_service.py`
 
 ## Interface
 
@@ -111,6 +111,6 @@ result = search_tasks(tasks, "appointment")
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-01
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

@@ -2,7 +2,7 @@
 
 **Service**: TerminalUtils
 **Purpose**: Provide platform-specific terminal clearing functionality
-**Module**: `src/ticklisto/utils/terminal_utils.py`
+**Module**: `src/tick_listo_cli/utils/terminal_utils.py`
 
 ## Interface
 
@@ -210,7 +210,7 @@ def get_platform() -> str:
 
 ```python
 # In commands.py
-from ticklisto.utils.terminal_utils import clear_terminal
+from tick_listo_cli.utils.terminal_utils import clear_terminal
 
 def handle_clear_command():
     """Handle the clear/clr command."""
@@ -223,6 +223,6 @@ def handle_clear_command():
 
 ---
 
-**Contract Version**: 1.0
-**Date**: 2026-02-03
+**Contract Version**: 1.2
+**Date**: 2026-03-24
 **Status**: Approved

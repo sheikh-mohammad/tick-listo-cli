@@ -6,8 +6,8 @@ import pytest
 import tempfile
 import os
 from datetime import datetime
-from ticklisto.models.task import Task, Priority
-from ticklisto.services.task_service import TaskService
+from tick_listo_cli.models.task import Task, Priority
+from tick_listo_cli.services.task_service import TaskService
 
 
 class TestTaskOperationsWithEnhancements:

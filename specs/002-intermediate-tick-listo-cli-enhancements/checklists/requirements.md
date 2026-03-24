@@ -1,8 +1,8 @@
-# Specification Quality Checklist: Intermediate Ticklisto Enhancements
+# Specification Quality Checklist: Intermediate Tick Listo CLI Enhancements
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-01-31
-**Feature**: [specs/002-intermediate-ticklisto-enhancements/spec.md](specs/002-intermediate-ticklisto-enhancements/spec.md)
+**Feature**: [specs/002-intermediate-tick-listo-cli-enhancements/spec.md](specs/002-intermediate-tick-listo-cli-enhancements/spec.md)
 
 ## Content Quality
 
