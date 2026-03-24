@@ -17,12 +17,12 @@ class StorageService:
     - Data structure validation
     """
 
-    def load_from_json(self, file_path: str = "ticklisto_data.json") -> dict:
+    def load_from_json(self, file_path: str = "tick_listo_cli_data.json") -> dict:
         """
         Load tasks and metadata from JSON file.
 
         Args:
-            file_path: Path to JSON file (default: ticklisto_data.json)
+            file_path: Path to JSON file (default: tick_listo_cli_data.json)
 
         Returns:
             Dictionary containing:
@@ -73,7 +73,7 @@ class StorageService:
                 raise
             raise ValueError(f"Error loading JSON file: {str(e)}")
 
-    def save_to_json(self, data: dict, file_path: str = "ticklisto_data.json") -> None:
+    def save_to_json(self, data: dict, file_path: str = "tick_listo_cli_data.json") -> None:
         """
         Save tasks and metadata to JSON file atomically.
 
@@ -81,7 +81,7 @@ class StorageService:
 
         Args:
             data: Dictionary containing tasks and next_id
-            file_path: Path to JSON file (default: ticklisto_data.json)
+            file_path: Path to JSON file (default: tick_listo_cli_data.json)
 
         Raises:
             ValueError: If data structure is invalid

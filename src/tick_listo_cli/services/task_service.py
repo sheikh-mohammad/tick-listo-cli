@@ -16,7 +16,7 @@ class TaskService:
     Implements the TaskList operations as defined in the data model.
     """
 
-    def __init__(self, data_file: str = "ticklisto_data.json"):
+    def __init__(self, data_file: str = "tick_listo_cli_data.json"):
         """
         Initialize the TaskService with an empty task list and next_id counter.
         Loads existing data from file if it exists.
